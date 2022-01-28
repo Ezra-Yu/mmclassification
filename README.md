@@ -123,9 +123,10 @@ Results and models are available in the [model zoo](https://mmclassification.rea
 - [x] [DeiT](https://github.com/open-mmlab/mmclassification/tree/master/configs/deit)
 - [x] [Conformer](https://github.com/open-mmlab/mmclassification/tree/master/configs/conformer)
 - [x] [T2T-ViT](https://github.com/open-mmlab/mmclassification/tree/master/configs/t2t_vit)
-- [ ] EfficientNet
-- [ ] Twins
-- [ ] HRNet
+- [x] [Twins](https://github.com/open-mmlab/mmclassification/tree/master/configs/twins)
+- [x] [EfficientNet](https://github.com/open-mmlab/mmclassification/tree/master/configs/efficientnet)
+- [x] [ConvNeXt](https://github.com/open-mmlab/mmclassification/tree/master/configs/convnext)
+- [x] [HRNet](https://github.com/open-mmlab/mmclassification/tree/master/configs/hrnet)
 
 </details>
 

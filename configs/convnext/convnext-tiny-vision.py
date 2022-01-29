@@ -4,17 +4,28 @@ _base_ = ['../_base_/datasets/pipelines/rand_aug.py']
 model = dict(
     type='ImageClassifier',
     backbone=dict(
-        type='ResNet',
-        depth=50,
-        num_stages=4,
+        type='ConvNeXt',
+        arch='tiny',
         out_indices=(3, ),
-        style='pytorch'),
-    neck=dict(type='GlobalAveragePooling'),
+        drop_path_rate=0.1,
+        gap_before_final_norm=True,
+        init_cfg=[
+            dict(
+                type='TruncNormal',
+                layer=['Conv2d', 'Linear'],
+                std=.02,
+                bias=0.),
+            dict(type='Constant', layer=['LayerNorm'], val=1., bias=0.),
+        ]),
     head=dict(
-        type='MultiLabelLinearClsHead',
+        type='LinearClsHead',
         num_classes=1000,
-        in_channels=2048,
-        loss=dict(type='LabelSmoothLoss', label_smooth_val=0.1, loss_weight=1.0)),
+        in_channels=768,
+        loss=dict(
+            type='LabelSmoothLoss',
+            label_smooth_val=0.1,
+            mode='original',
+        )),
     train_cfg=dict(augments=[
         dict(type='BatchMixup', alpha=0.8, num_classes=1000, prob=0.5),
         dict(type='BatchCutMix', alpha=1.0, num_classes=1000, prob=0.5)
@@ -27,7 +38,7 @@ img_norm_cfg = dict(
 train_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(type='RandomResizedCrop', size=176),
-        dict(
+    dict(
         type='RandAugment',
         policies={{_base_.rand_increasing_policies}},
         num_policies=2,
@@ -78,6 +89,9 @@ data = dict(
         pipeline=test_pipeline))
 evaluation = dict(interval=1, metric='accuracy')
 
+# Dataset settings
+sampler = dict(type='RepeatAugSampler', num_repeats=4)
+
 # ema
 momentum = 2e-5
 adjust = 8 * 128 * 32 / 600
@@ -85,7 +99,14 @@ alpha = min(1.0, momentum * adjust)
 custom_hooks = [dict(type='EMAHook', momentum=alpha, priority='ABOVE_NORMAL')]
 
 # optimizer
-optimizer = dict(type='SGD', lr=0.5, momentum=0.9, weight_decay=2e-5, paramwise_cfg=dict(norm_decay_mult=0))
+paramwise_cfg=dict(norm_decay_mult=0)
+optimizer = dict(
+    type='AdamW',
+    lr=1e-3,
+    weight_decay=0.05,
+    eps=1e-6,
+    betas=(0.9, 0.999),
+    paramwise_cfg=paramwise_cfg)
 optimizer_config = dict(grad_clip=None)
 # learning policy
 lr_config = dict(

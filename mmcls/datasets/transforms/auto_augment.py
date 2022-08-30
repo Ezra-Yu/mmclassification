@@ -1,7 +1,7 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import inspect
 from copy import deepcopy
-from math import ceil
+from math import ceil, atan
 from numbers import Number
 from typing import List, Optional, Sequence, Tuple, Union
 
@@ -520,6 +520,54 @@ class Translate(BaseAugTransform):
         repr_str += f'interpolation={self.interpolation}{self.extra_repr()})'
         return repr_str
 
+
+@TRANSFORMS.register_module()
+class TranslatePiexl(Translate):
+    """Translate images.
+
+    Args:
+        magnitude (int): The magnitude used for translate. Note
+            that the offset is calculated by magnitude piexls in the
+            corresponding direction. With a magnitude of 1, the whole image
+            will be moved out of the range. If None, generate from
+            ``magnitude_range``, see :class:`AugTransform`.
+        pad_val (int, Sequence[int]): Pixel pad_val value for constant fill.
+            If a sequence of length 3, it is used to pad_val R, G, B channels
+            respectively. Defaults to 128.
+        prob (float): The probability for performing translate therefore should
+             be in range [0, 1]. Defaults to 0.5.
+        direction (str): The translating direction. Options are 'horizontal'
+            and 'vertical'. Defaults to 'horizontal'.
+        random_negative_prob (float): The probability that turns the magnitude
+            negative, which should be in range [0,1]. Defaults to 0.5.
+        interpolation (str): Interpolation method. Options are 'nearest',
+            'bilinear', 'bicubic', 'area', 'lanczos'. Defaults to 'nearest'.
+        **kwargs: Other keyword arguments of :class:`AugTransform`.
+    """
+
+    def __init__(self, magnitude: Optional[int] = None, **kwargs):
+        super().__init__(magnitude=magnitude, **kwargs)
+
+    def transform(self, results):
+        """Apply transform to results."""
+        if self.random_disable():
+            return results
+
+        if self.magnitude is not None:
+            magnitude = self.random_negative(self.magnitude)
+        else:
+            magnitude = self.random_negative(self.random_magnitude())
+
+        img = results['img']
+        img_translated = mmcv.imtranslate(
+            img,
+            magnitude,
+            direction=self.direction,
+            border_value=self.pad_val,
+            interpolation=self.interpolation)
+        results['img'] = img_translated.astype(img.dtype)
+
+        return results
 
 @TRANSFORMS.register_module()
 class Rotate(BaseAugTransform):
@@ -1172,4 +1220,21 @@ RANDAUG_POLICIES = {
         dict(type='Translate', magnitude_range=(0, 0.45), direction='horizontal'),
         dict(type='Translate', magnitude_range=(0, 0.45), direction='vertical'),
     ],
+    # Refers to `TrivialAugmentWide` in torchvision
+    'vision_ta_wide':[
+        dict(type='Invert', prob=0),   # prob=0, use as Identity
+        dict(type='Shear', magnitude_range=(0, atan(0.99)), direction='horizontal'),
+        dict(type='Shear', magnitude_range=(0, atan(0.99)), direction='vertical'),
+        dict(type='TranslatePiexl', magnitude_range=(0, 32), direction='horizontal'),
+        dict(type='TranslatePiexl', magnitude_range=(0, 32), direction='vertical'),
+        dict(type='Rotate', magnitude_range=(0, 135)),
+        dict(type='ColorTransform', magnitude_range=(0, 0.99)),
+        dict(type='Contrast', magnitude_range=(0, 0.99)),
+        dict(type='Brightness', magnitude_range=(0, 0.99)),
+        dict(type='Sharpness', magnitude_range=(0, 0.99)),
+        dict(type='Posterize', magnitude_range=(5.6, -0.4)),
+        dict(type='Solarize', magnitude_range=(255, 0)),
+        dict(type='AutoContrast'),
+        dict(type='Equalize'),
+    ]
 }

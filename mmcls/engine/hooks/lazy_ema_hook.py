@@ -16,6 +16,7 @@ class LazyEMAHook(Hook):
                  **kwargs):
         self.ema_cfg = dict(type=ema_type, **kwargs)
         self.lazy_interal = lazy_interal
+        self.interal = kwargs['interval']
 
     def before_run(self, runner) -> None:
         """Create an ema copy of the model."""
@@ -37,6 +38,8 @@ class LazyEMAHook(Hook):
                          data_batch: DATA_BATCH = None,
                          outputs: Optional[dict] = None) -> None:
         """Update ema parameter."""
+        if runner.iter % self.interal == 0:
+            return
         if runner.iter < self.warmup_iters:
             self.ema_model.steps.fill_(0)
         self.ema_model.update_parameters(self.src_model)

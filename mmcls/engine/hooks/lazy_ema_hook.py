@@ -38,8 +38,8 @@ class LazyEMAHook(Hook):
                          data_batch: DATA_BATCH = None,
                          outputs: Optional[dict] = None) -> None:
         """Update ema parameter."""
-        if runner.iter % self.interal == 0:
-            return
         if runner.iter < self.warmup_iters:
             self.ema_model.steps.fill_(0)
+            if runner.iter % self.interal != 0:
+                return
         self.ema_model.update_parameters(self.src_model)

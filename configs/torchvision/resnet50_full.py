@@ -130,7 +130,7 @@ test_cfg = dict()
 # decay(torchvision) = 1 - momentum
 custom_hooks = [
     dict(
-        type='LazyEMAHook',
+        type='EMAHook',
         momentum=0.00109,
         iters=5,
         by_epoch=True,

@@ -75,21 +75,15 @@ param_scheduler = [
     # warm up learning rate scheduler
     dict(
         type='LinearLR',
-        start_factor=0.01,
+        start_factor=0.001,
         by_epoch=True,
         begin=0,
-        end=5,
-        # update by iter
-        convert_to_iter_based=True,
-    ),
+        end=6),
     # main learning rate scheduler
     dict(
         type='CosineAnnealingLR',
-        T_max=95,
         by_epoch=True,
-        begin=5,
-        end=100,
-    )
+        begin=6)
 ]
 
 # train, val, test setting

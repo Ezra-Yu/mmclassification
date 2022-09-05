@@ -35,11 +35,7 @@ bgr_std = preprocess_cfg['std'][::-1]
 
 train_pipeline = [
     dict(type='LoadImageFromFile'),
-    dict(
-        type='RandomResizedCrop',
-        scale=176,
-        backend='pillow',
-        interpolation='bicubic'),
+    dict(type='RandomResizedCrop', scale=176, backend='pillow'),
     dict(type='RandomFlip', prob=0.5, direction='horizontal'),
     dict(
         type='RandAugment',
@@ -52,7 +48,8 @@ train_pipeline = [
     dict(
         type='RandomErasing',
         erase_prob=0.1,
-        mode='rand',
+        mode='const',
+        fill_color=0,
         min_area_ratio=0.02,
         max_area_ratio=0.33,
         aspect_range=(0.3, 3.3)),

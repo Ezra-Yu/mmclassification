@@ -1,15 +1,15 @@
 from typing import List, Optional, Sequence
 
 from mmengine.runner import BaseLoop
-import torch
+
 from mmengine.model import is_model_wrapper
-from mmengine.hooks import Hook
+from mmengine.hooks import EMAHook
 from mmcls.registry import HOOKS, MODELS
 
 DATA_BATCH = Optional[Sequence[dict]]
 
 @HOOKS.register_module()
-class LazyEMAHook(Hook):
+class LazyEMAHook(EMAHook):
     def __init__(self, 
                  ema_type: str = 'ExponentialMovingAverage',
                  lazy_interal=5,

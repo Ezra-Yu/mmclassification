@@ -1,6 +1,3 @@
-from traitlets import default
-
-
 _base_ = [
     '../_base_/models/resnet18.py', '../_base_/datasets/imagenet_bs32.py',
     '../_base_/schedules/imagenet_bs256.py', '../_base_/default_runtime.py'
@@ -10,6 +7,6 @@ _base_ = [
 custom_hooks = [
     dict(
         type='ProgressiveCurriculumHook',
-        curriculum_cfg={1: (288, 288), 2: (320, 320) ,2: (320, 320)}
+        curriculum_cfg={1: (288, 288), 2: (320, 320)}
     ),
 ]

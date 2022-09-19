@@ -71,11 +71,6 @@ model = dict(
         topk=(1, 5),
     ))
 
-# dataset settings
-train_dataloader = dict(batch_size=32)
-val_dataloader = dict(batch_size=128)
-test_dataloader = dict(batch_size=128)
-
 # schedule settings
 optim_wrapper = dict(
     optimizer=dict(type='SGD', lr=0.1, momentum=0.9, weight_decay=0.0001),

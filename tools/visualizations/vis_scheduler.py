@@ -41,6 +41,7 @@ class ParamRecordHook(Hook):
         self.by_epoch = by_epoch
         self.lr_list = []
         self.momentum_list = []
+        self.weight_decay_list = []
         self.task_id = 0
         self.progress = Progress(BarColumn(), MofNCompleteColumn(),
                                  TextColumn('{task.description}'))
@@ -66,6 +67,8 @@ class ParamRecordHook(Hook):
         self.lr_list.append(runner.optim_wrapper.get_lr()['lr'][0])
         self.momentum_list.append(
             runner.optim_wrapper.get_momentum()['momentum'][0])
+        self.weight_decay_list.append(
+            runner.optim_wrapper.get_momentum()['weight_decay'][0])
 
     def after_train(self, runner):
         self.progress.stop()

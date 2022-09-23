@@ -26,7 +26,7 @@ test_pipeline = [
 
 train_dataloader = dict(
     batch_size=32,
-    num_workers=12,
+    num_workers=8,
     dataset=dict(
         type=dataset_type,
         data_root='data/imagenet',
@@ -39,7 +39,7 @@ train_dataloader = dict(
 
 val_dataloader = dict(
     batch_size=256,
-    num_workers=12,
+    num_workers=8,
     dataset=dict(
         type=dataset_type,
         data_root='data/imagenet',
@@ -70,11 +70,6 @@ model = dict(
         loss=dict(type='CrossEntropyLoss', loss_weight=1.0),
         topk=(1, 5),
     ))
-
-# dataset settings
-train_dataloader = dict(batch_size=32)
-val_dataloader = dict(batch_size=128)
-test_dataloader = dict(batch_size=128)
 
 # schedule settings
 optim_wrapper = dict(

@@ -1224,11 +1224,11 @@ RANDAUG_POLICIES = {
     # Refers to `TrivialAugmentWide` in torchvision
     'vision_ta_wide':[
         dict(type='Invert', prob=0),   # prob=0, use as Identity
-        dict(type='Shear', magnitude_range=(0, atan(0.99)), direction='horizontal'),
-        dict(type='Shear', magnitude_range=(0, atan(0.99)), direction='vertical'),
-        dict(type='TranslatePiexl', magnitude_range=(0, 32), direction='horizontal'),
-        dict(type='TranslatePiexl', magnitude_range=(0, 32), direction='vertical'),
-        dict(type='Rotate', magnitude_range=(0, 135)),
+        dict(type='Shear', magnitude_range=(0, 0.99), direction='horizontal', interpolation='nearest'), # shearX
+        dict(type='Shear', magnitude_range=(0, 0.99), direction='vertical', interpolation='nearest'), # shearY
+        dict(type='TranslatePiexl', magnitude_range=(0, 32), direction='horizontal'), # TranslateX
+        dict(type='TranslatePiexl', magnitude_range=(0, 32), direction='vertical'), # TranslateY
+        dict(type='Rotate', magnitude_range=(0, 135.0)),
         dict(type='ColorTransform', magnitude_range=(0, 0.99)),
         dict(type='Contrast', magnitude_range=(0, 0.99)),
         dict(type='Brightness', magnitude_range=(0, 0.99)),

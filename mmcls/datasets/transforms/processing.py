@@ -554,15 +554,23 @@ class RandomErasing(BaseTransform):
         # height.
         log_aspect_range = np.log(
             np.array(self.aspect_range, dtype=np.float32))
-        aspect_ratio = np.exp(np.random.uniform(*log_aspect_range))
-        area = img_h * img_w
-        area *= np.random.uniform(self.min_area_ratio, self.max_area_ratio)
 
-        h = min(int(round(np.sqrt(area * aspect_ratio))), img_h)
-        w = min(int(round(np.sqrt(area / aspect_ratio))), img_w)
-        top = np.random.randint(0, img_h - h) if img_h > h else 0
-        left = np.random.randint(0, img_w - w) if img_w > w else 0
-        return top, left, h, w
+        for _ in range(10):
+            aspect_ratio = np.exp(np.random.uniform(*log_aspect_range))
+            area = img_h * img_w
+            erase_area = area * np.random.uniform(self.min_area_ratio, self.max_area_ratio)
+
+            h = int(round(np.sqrt(erase_area * aspect_ratio)))
+            w = int(round(np.sqrt(erase_area / aspect_ratio)))
+
+            if not (h < img_h and w < img_w):
+                continue
+
+            top = np.random.randint(0, img_h - h)
+            left = np.random.randint(0, img_w - w)
+            return top, left, h, w
+
+        return 0, 0, h, w
 
     def transform(self, results):
         """

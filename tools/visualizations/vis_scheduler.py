@@ -68,7 +68,7 @@ class ParamRecordHook(Hook):
         self.momentum_list.append(
             runner.optim_wrapper.get_momentum()['momentum'][0])
         self.weight_decay_list.append(
-            runner.optim_wrapper.get_momentum()['weight_decay'][0])
+            runner.optim_wrapper.param_groups[0]['weight_decay'])
 
     def after_train(self, runner):
         self.progress.stop()
@@ -83,9 +83,9 @@ def parse_args():
         '--parameter',
         type=str,
         default='lr',
-        choices=['lr', 'momentum'],
+        choices=['lr', 'momentum', 'weight-decay'],
         help='The parameter to visualize its change curve, choose from'
-        '"lr" and "momentum". Defaults to "lr".')
+        '"lr", "momentum" or "weight-decay". Defaults to "lr".')
     parser.add_argument(
         '-d',
         '--dataset-size',
@@ -194,8 +194,12 @@ def simulate_train(data_loader, cfg, by_epoch):
         custom_hooks=cfg.get('custom_hooks', None))
 
     runner.train()
+    param_lists = [
+        param_record_hook.lr_list, param_record_hook.momentum_list,
+        param_record_hook.weight_decay_list
+    ]
 
-    return param_record_hook.lr_list, param_record_hook.momentum_list
+    return param_lists
 
 
 def main():
@@ -253,11 +257,13 @@ def main():
     rich.print(dataset_info + '\n')
 
     # simulation training process
-    lr_list, momentum_list = simulate_train(data_loader, cfg, by_epoch)
+    param_lists = simulate_train(data_loader, cfg, by_epoch)
     if args.parameter == 'lr':
-        param_list = lr_list
-    else:
-        param_list = momentum_list
+        param_list = param_lists[0]
+    elif args.parameter == 'momentum':
+        param_list = param_lists[1]
+    elif args.parameter == 'weight-decay':
+        param_list = param_lists[2]
 
     param_name = 'Learning Rate' if args.parameter == 'lr' else 'Momentum'
     plot_curve(param_list, args, param_name, len(data_loader), by_epoch)

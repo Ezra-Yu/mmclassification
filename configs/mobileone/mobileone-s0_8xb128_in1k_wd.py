@@ -60,8 +60,7 @@ test_evaluator = val_evaluator
 
 # schedule settings
 optim_wrapper = dict(
-    optimizer=dict(type='SGD', lr=0.1, momentum=0.9, weight_decay=0.0001),
-)
+    optimizer=dict(type='SGD', lr=0.1, momentum=0.9, weight_decay=0.0001), )
 
 # learning policy
 param_scheduler = [
@@ -99,4 +98,3 @@ test_cfg = dict()
 # NOTE: `auto_scale_lr` is for automatically scaling LR,
 # based on the actual training batch size.
 auto_scale_lr = dict(base_batch_size=1024)
-

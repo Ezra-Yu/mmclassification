@@ -1,6 +1,4 @@
-_base_ = [
-    '../_base_/default_runtime.py'
-]
+_base_ = ['../_base_/default_runtime.py']
 
 # dataset settings
 dataset_type = 'ImageNet'
@@ -124,4 +122,3 @@ test_cfg = dict()
 # NOTE: `auto_scale_lr` is for automatically scaling LR,
 # based on the actual training batch size.
 auto_scale_lr = dict(base_batch_size=1024)
-

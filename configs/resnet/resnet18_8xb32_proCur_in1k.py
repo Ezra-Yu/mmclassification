@@ -3,10 +3,11 @@ _base_ = [
     '../_base_/schedules/imagenet_bs256.py', '../_base_/default_runtime.py'
 ]
 
-
 custom_hooks = [
     dict(
         type='ProgressiveCurriculumHook',
-        curriculum_cfg={1: (288, 288), 2: (320, 320)}
-    ),
+        curriculum_cfg={
+            1: (288, 288),
+            2: (320, 320)
+        }),
 ]

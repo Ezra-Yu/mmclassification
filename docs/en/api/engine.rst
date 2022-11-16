@@ -31,6 +31,7 @@ Hooks
    ClassNumCheckHook
    PreciseBNHook
    VisualizationHook
+   EMAHook
 
 .. module:: mmcls.engine.optimizers
 

@@ -126,3 +126,6 @@ custom_hooks = [
         evaluate_on_origin=True,
         priority='ABOVE_NORMAL')
 ]
+
+default_hooks = dict(
+    checkpoint=dict(type='CheckpointHook', interval=1, max_keep_ckpts=3))

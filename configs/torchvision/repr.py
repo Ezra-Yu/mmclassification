@@ -22,15 +22,15 @@ optim_wrapper = dict(
 
 # dataset settings
 dataset_type = 'ImageNet'
-preprocess_cfg = dict(
+data_preprocessor = dict(
     num_classes=1000,
     mean=[123, 116, 103],
     std=[58, 57, 57],
     to_rgb=True,
 )
 
-bgr_mean = preprocess_cfg['mean'][::-1]
-bgr_std = preprocess_cfg['std'][::-1]
+bgr_mean = data_preprocessor['mean'][::-1]
+bgr_std = data_preprocessor['std'][::-1]
 
 train_pipeline = [
     dict(type='LoadImageFromFile'),

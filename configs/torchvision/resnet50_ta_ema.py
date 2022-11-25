@@ -2,7 +2,7 @@ _base_ = ['../_base_/models/resnet50.py', '../_base_/default_runtime.py']
 
 # dataset settings
 dataset_type = 'ImageNet'
-preprocess_cfg = dict(
+data_preprocessor = dict(
     num_classes=1000,
     # RGB format normalization parameters
     mean=[123.675, 116.28, 103.53],
@@ -11,8 +11,8 @@ preprocess_cfg = dict(
     to_rgb=True,
 )
 
-bgr_mean = preprocess_cfg['mean'][::-1]
-bgr_std = preprocess_cfg['std'][::-1]
+bgr_mean = data_preprocessor['mean'][::-1]
+bgr_std = data_preprocessor['std'][::-1]
 
 train_pipeline = [
     dict(type='LoadImageFromFile'),

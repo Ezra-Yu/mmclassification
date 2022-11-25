@@ -22,7 +22,7 @@ optim_wrapper = dict(
 
 # dataset settings
 dataset_type = 'ImageNet'
-preprocess_cfg = dict(
+data_preprocessor = dict(
     num_classes=1000,
     # RGB format normalization parameters
     mean=[123.675, 116.28, 103.53],
@@ -31,8 +31,8 @@ preprocess_cfg = dict(
     to_rgb=True,
 )
 
-bgr_mean = preprocess_cfg['mean'][::-1]
-bgr_std = preprocess_cfg['std'][::-1]
+bgr_mean = data_preprocessor['mean'][::-1]
+bgr_std = data_preprocessor['std'][::-1]
 
 train_pipeline = [
     dict(type='LoadImageFromFile'),
@@ -86,7 +86,7 @@ val_dataloader = dict(
         ann_file='meta/val.txt',
         data_prefix='val',
         pipeline=test_pipeline),
-    sampler=dict(type='RepeatAugSampler', shuffle=True),
+    sampler=dict(type='RepeatAugSampler', shuffle=False),
     persistent_workers=True,
 )
 val_evaluator = dict(type='Accuracy', topk=(1, 5))

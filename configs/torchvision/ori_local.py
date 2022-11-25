@@ -16,7 +16,7 @@ model = dict(
 
 # dataset settings
 dataset_type = 'VisionImageNet'
-preprocess_cfg = dict(
+data_preprocessor = dict(
     num_classes=1000,
     mean=[0., 0., 0.],
     std=[1., 1., 1.],

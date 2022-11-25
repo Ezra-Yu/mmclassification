@@ -1,7 +1,7 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import inspect
 from copy import deepcopy
-from math import ceil, atan
+from math import atan, ceil
 from numbers import Number
 from typing import List, Optional, Sequence, Tuple, Union
 
@@ -568,6 +568,7 @@ class TranslatePiexl(Translate):
         results['img'] = img_translated.astype(img.dtype)
 
         return results
+
 
 @TRANSFORMS.register_module()
 class Rotate(BaseAugTransform):

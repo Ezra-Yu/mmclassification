@@ -9,8 +9,8 @@ model = dict(
             mode='original',
         )),
     train_cfg=dict(augments=[
-        dict(type='Mixup', alpha=0.2, num_classes=1000),
-        dict(type='CutMix', alpha=1.0, num_classes=1000)
+        dict(type='Mixup', alpha=0.2),
+        dict(type='CutMix', alpha=1.0)
     ]),
 )
 
@@ -23,6 +23,7 @@ optim_wrapper = dict(
 # dataset settings
 dataset_type = 'ImageNet'
 preprocess_cfg = dict(
+    num_classes=1000,
     mean=[123, 116, 103],
     std=[58, 57, 57],
     to_rgb=True,

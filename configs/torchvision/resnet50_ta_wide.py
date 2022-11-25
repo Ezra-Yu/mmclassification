@@ -3,6 +3,7 @@ _base_ = ['../_base_/models/resnet50.py', '../_base_/default_runtime.py']
 # dataset settings
 dataset_type = 'ImageNet'
 preprocess_cfg = dict(
+    num_classes=1000,
     # RGB format normalization parameters
     mean=[123.675, 116.28, 103.53],
     std=[58.395, 57.12, 57.375],

@@ -9,14 +9,15 @@ model = dict(
             mode='original',
         )),
     train_cfg=dict(augments=[
-        dict(type='Mixup', alpha=0.2, num_classes=1000),
-        dict(type='CutMix', alpha=1.0, num_classes=1000)
+        dict(type='Mixup', alpha=0.2),
+        dict(type='CutMix', alpha=1.0)
     ]),
 )
 
 # dataset settings
 dataset_type = 'VisionImageNet'
 preprocess_cfg = dict(
+    num_classes=1000,
     mean=[0., 0., 0.],
     std=[1., 1., 1.],
     to_rgb=False,

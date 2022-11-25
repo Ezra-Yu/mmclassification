@@ -120,13 +120,14 @@ train_cfg = dict(by_epoch=True, max_epochs=600, val_interval=1)
 val_cfg = dict()
 test_cfg = dict()
 
-# decay(torchvision) = 1 - momentum
 custom_hooks = [
     dict(
-        type='EMAHook',
+        type='LazyEMAHook',
         momentum=0.0010923,
-        lazy_interal=5,
+        begin_epoch=5,
         interval=32,
         update_buffers=True,
+        evaluate_on_ema=True,
+        evaluate_on_origin=True,
         priority='ABOVE_NORMAL')
 ]

@@ -79,22 +79,14 @@ val_cfg = dict()
 test_cfg = dict()
 
 # decay(torchvision) = 1 - momentum
-# custom_hooks = [
-
-#     # Decay adjustment that aims to keep the decay independent from other hyper-parameters originally proposed at:
-#     # https://github.com/facebookresearch/pycls/blob/f8cd9627/pycls/core/net.py#L123
-#     #
-#     # total_ema_updates = (Dataset_size / n_GPUs) * epochs / (batch_size_per_gpu * EMA_steps) = [(1287056 / 8) * 600] / (128 * 32) = 23567
-#     # We consider constant = Dataset_size for a given dataset/setup and ommit it. Thus:
-#     # adjust = 1 / total_ema_updates ~= n_GPUs * batch_size_per_gpu * EMA_steps / epochs = 8 * 128 * 32 * 23567 / 600 = 1287072
-#     # adjust = args.world_size * args.batch_size * args.model_ema_steps / args.epochs  = 8 * 128 * 32 / 600 = 54.61333333333334
-#     # alpha = 1.0 - args.model_ema_decay     # 2-05   0.00002 
-#     # alpha = min(1.0, alpha * adjust)  # min(1, 0.00002 * 54.61333333333334 = 2.56e-5) = 0.0010923
-#     dict(
-#         type='LazyEMAHook',
-#         momentum=0.0010923,
-#         lazy_interal=5,
-#         interval=32,
-#         update_buffers=True,
-#         priority='ABOVE_NORMAL')
-# ]
+custom_hooks = [
+    dict(
+        type='LazyEMAHook',
+        momentum=0.0010923,
+        begin_epoch=5,
+        interval=32,
+        update_buffers=True,
+        evaluate_on_ema=True,
+        evaluate_on_origin=True,
+        priority='ABOVE_NORMAL')
+]

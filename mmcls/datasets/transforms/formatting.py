@@ -2,6 +2,7 @@
 import warnings
 from collections.abc import Sequence
 
+import cv2
 import numpy as np
 import torch
 from mmcv.transforms import BaseTransform
@@ -81,10 +82,32 @@ class PackClsInputs(BaseTransform):
         packed_results = dict()
         if 'img' in results:
             img = results['img']
-            if len(img.shape) < 3:
-                img = np.expand_dims(img, -1)
-            img = np.ascontiguousarray(img.transpose(2, 0, 1))
-            packed_results['inputs'] = to_tensor(img)
+            if isinstance(img, np.ndarray):
+                if len(img.shape) < 3:
+                    img = np.expand_dims(img, -1)
+                img = np.ascontiguousarray(img.transpose(2, 0, 1))
+                packed_results['inputs'] = to_tensor(img)
+            elif isinstance(img, torch.Tensor):
+                packed_results['inputs'] = img
+            else:
+                # handle PIL Image
+                mode_to_nptype = {
+                    'I': np.int32,
+                    'I;16': np.int16,
+                    'F': np.float32
+                }
+                image = torch.from_numpy(
+                    np.array(
+                        img, mode_to_nptype.get(img.mode, np.uint8),
+                        copy=True))
+
+                if img.mode == '1':
+                    img = 255 * img
+                image = image.view(img.size[1], img.size[0],
+                                   len(img.getbands()))
+                # put it from HWC to CHW format
+                image = image.permute((2, 0, 1)).contiguous()
+                packed_results['inputs'] = image
         else:
             warnings.warn(
                 'Cannot get "img" in the input dict of `PackClsInputs`,'
@@ -152,11 +175,25 @@ class ToPIL(BaseTransform):
     **Modified Keys:**
 
     - img
+
+    Args:
+
+        to_rgb (bool): Whether to convert img to rgb. Defaults to False.
     """
+
+    def __init__(self, to_rgb: bool = False):
+        self.to_rgb = to_rgb
 
     def transform(self, results):
         """Method to convert images to :obj:`PIL.Image.Image`."""
-        results['img'] = Image.fromarray(results['img'])
+        img = results['img']
+        assert isinstance(img, np.ndarray), (
+            f"results['img'] must be a np.ndarray, but get {type(img)}")
+
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB) if self.to_rgb else img
+        img = Image.fromarray(img)
+
+        results['img'] = img
         return results
 
 

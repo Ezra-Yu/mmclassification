@@ -8,6 +8,7 @@ from typing import Dict, List, Optional, Sequence, Tuple, Union
 import mmcv
 import mmengine
 import numpy as np
+import torch
 from mmcv.transforms import BaseTransform
 from mmcv.transforms.utils import cache_randomness
 
@@ -17,6 +18,34 @@ try:
     import albumentations
 except ImportError:
     albumentations = None
+
+
+def register_vision_transfroms() -> List[str]:
+    """Register optimizers in ``torch.optim`` to the ``OPTIMIZERS`` registry.
+
+    Returns:
+        List[str]: A list of registered optimizers' name.
+    """
+    try:
+        import torchvision.transforms
+    except ImportError:
+        raise ImportError('please install ``torchvision``.')
+
+    vision_transfroms = []
+    for module_name in dir(torchvision.transforms):
+        if module_name.startswith('__'):
+            continue
+        _transfrom = getattr(torchvision.transforms, module_name)
+        if inspect.isclass(_transfrom) and issubclass(_transfrom,
+                                                      torch.nn.Module):
+            TRANSFORMS.register_module(
+                module=_transfrom, name=f'torchvision.{module_name}')
+            vision_transfroms.append(f'torchvision.{module_name}')
+    return vision_transfroms
+
+
+VISION_TRANSFROMS = register_vision_transfroms()
+print(TRANSFORMS)
 
 
 @TRANSFORMS.register_module()

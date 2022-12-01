@@ -192,8 +192,7 @@ class ToPIL(BaseTransform):
         return results
 
     def __repr__(self):
-        return self.__class__.__name__ + \
-            f'(to_rgb={self.to_rgbs})'
+        return self.__class__.__name__ + f'(to_rgb={self.to_rgb})'
 
 
 @TRANSFORMS.register_module()
@@ -228,7 +227,7 @@ class ToNumpy(BaseTransform):
 
     def __repr__(self):
         return self.__class__.__name__ + \
-            f'(to_rgb={self.to_rgbs}, dtype={self.dtype})'
+            f'(to_rgb={self.to_rgb}, dtype={self.dtype})'
 
 
 @TRANSFORMS.register_module()

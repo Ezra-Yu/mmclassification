@@ -20,7 +20,7 @@ train_pipeline = [
     dict(type='ToPIL', to_rgb=True),
     dict(type='torchvision/RandomResizedCrop', size=176, interpolation=2),
     dict(type='torchvision/RandomHorizontalFlip'),
-    # dict(type='torchvision/TrivialAugmentWide',interpolation=2),
+    dict(type='torchvision/TrivialAugmentWide', interpolation=2),
     dict(type='torchvision/PILToTensor'),
     dict(type='torchvision/ConvertImageDtype', dtype=torch.float),
     dict(

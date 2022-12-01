@@ -17,34 +17,30 @@ data_preprocessor = dict(num_classes=1000, mean=None, std=None, to_rgb=False)
 
 train_pipeline = [
     dict(type='LoadImageFromFile'),
-    dict(type='RandomResizedCrop', scale=176, backend='pillow'),
-    dict(type='RandomFlip', prob=0.5, direction='horizontal'),
+    dict(type='ToPIL', to_rgb=True),
+    dict(type='torchvision/RandomResizedCrop', size=176, interpolation=2),
+    dict(type='torchvision/RandomHorizontalFlip'),
+    # dict(type='torchvision/TrivialAugmentWide',interpolation=2),
+    dict(type='torchvision/PILToTensor'),
+    dict(type='torchvision/ConvertImageDtype', dtype=torch.float),
     dict(
-        type='RandAugment',
-        policies='vision_ta_wide',
-        num_policies=1,
-        total_level=31,
-        magnitude_level=31,
-        magnitude_std='inf'),
-    dict(
-        type='RandomErasing',
-        erase_prob=0.1,
-        mode='const',
-        min_area_ratio=0.02,
-        max_area_ratio=0.33,
-        aspect_range=(0.3, 3.3)),
+        type='torchvision/Normalize',
+        mean=(0.485, 0.456, 0.406),
+        std=(0.229, 0.224, 0.225),
+    ),
+    dict(type='torchvision/RandomErasing', p=0.1),
     dict(type='PackClsInputs'),
 ]
 
 test_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(type='ToPIL', to_rgb=True),
-    dict(type='torchvision.Resize', size=256, interpolation=1),
-    dict(type='torchvision.CenterCrop', size=224),
-    dict(type='torchvision.PILToTensor', size=224),
-    dict(type='transforms.ConvertImageDtype', dtype=torch.float),
+    dict(type='torchvision/Resize', size=232, interpolation=2),
+    dict(type='torchvision/CenterCrop', size=224),
+    dict(type='torchvision/PILToTensor'),
+    dict(type='torchvision/ConvertImageDtype', dtype=torch.float),
     dict(
-        type='transforms.Normalize',
+        type='torchvision/Normalize',
         mean=(0.485, 0.456, 0.406),
         std=(0.229, 0.224, 0.225)),
     dict(type='PackClsInputs'),
@@ -58,7 +54,8 @@ train_dataloader = dict(
     dataset=dict(
         type=dataset_type,
         ann_file='./data/imagenet/meta/train.txt',
-        data_prefix='./data/imagenet/train'),
+        data_prefix='./data/imagenet/train',
+        pipeline=train_pipeline),
     sampler=dict(type='RepeatAugSampler', num_repeats=4, shuffle=True))
 
 val_dataloader = dict(

@@ -170,14 +170,13 @@ class ToPIL(BaseTransform):
 
     **Required Keys:**
 
-    - img
+    - ``*img**``
 
     **Modified Keys:**
 
-    - img
+    - ``*img**``
 
     Args:
-
         to_rgb (bool): Whether to convert img to rgb. Defaults to False.
     """
 
@@ -187,46 +186,49 @@ class ToPIL(BaseTransform):
     def transform(self, results):
         """Method to convert images to :obj:`PIL.Image.Image`."""
         img = results['img']
-        assert isinstance(img, np.ndarray), (
-            f"results['img'] must be a np.ndarray, but get {type(img)}")
-
         img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB) if self.to_rgb else img
-        img = Image.fromarray(img)
 
-        results['img'] = img
-        return results
-
-
-@TRANSFORMS.register_module()
-class ToNumpy(BaseTransform):
-    """Convert object to :obj:`numpy.ndarray`.
-
-    **Required Keys:**
-
-    - ``*keys**``
-
-    **Modified Keys:**
-
-    - ``*keys**``
-
-    Args:
-        dtype (str, optional): The dtype of the converted numpy array.
-            Defaults to None.
-    """
-
-    def __init__(self, keys, dtype=None):
-        self.keys = keys
-        self.dtype = dtype
-
-    def transform(self, results):
-        """Method to convert object to :obj:`numpy.ndarray`."""
-        for key in self.keys:
-            results[key] = np.array(results[key], dtype=self.dtype)
+        results['img'] = Image.fromarray(img)
         return results
 
     def __repr__(self):
         return self.__class__.__name__ + \
-            f'(keys={self.keys}, dtype={self.dtype})'
+            f'(to_rgb={self.to_rgbs})'
+
+
+@TRANSFORMS.register_module()
+class ToNumpy(BaseTransform):
+    """Convert img to :obj:`numpy.ndarray`.
+
+    **Required Keys:**
+
+    - ``*img**``
+
+    **Modified Keys:**
+
+    - ``*img**``
+
+    Args:
+        to_rgb (bool): Whether to convert img to rgb. Defaults to False.
+        dtype (str, optional): The dtype of the converted numpy array.
+            Defaults to None.
+    """
+
+    def __init__(self, to_rgb: bool = False, dtype=None):
+        self.to_rgb = to_rgb
+        self.dtype = dtype
+
+    def transform(self, results):
+        """Method to convert img to :obj:`numpy.ndarray`."""
+        img = np.array(results['img'], dtype=self.dtype)
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB) if self.to_rgb else img
+
+        results['img'] = img
+        return results
+
+    def __repr__(self):
+        return self.__class__.__name__ + \
+            f'(to_rgb={self.to_rgbs}, dtype={self.dtype})'
 
 
 @TRANSFORMS.register_module()

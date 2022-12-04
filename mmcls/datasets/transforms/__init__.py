@@ -17,3 +17,32 @@ __all__ = [
     'PackClsInputs', 'Albumentations', 'EfficientNetRandomCrop',
     'EfficientNetCenterCrop', 'ResizeEdge', 'BaseAugTransform'
 ]
+
+import io
+
+from mmcv.transforms.loading import LoadImageFromFile as BaseLoadImageFromFile
+from PIL import Image
+
+from mmcls.registry import TRANSFORMS
+
+
+@TRANSFORMS.register_module()
+class PILLoadImageFromFile(BaseLoadImageFromFile):
+
+    def transform(self, results: dict):
+        filename = results['img_path']
+        try:
+            img_bytes = self.file_client.get(filename)
+            buff = io.BytesIO(img_bytes)
+            img = Image.open(buff)
+            results['img'] = img.convert('RGB')
+
+        except Exception as e:
+            if self.ignore_empty:
+                return None
+            else:
+                raise e
+
+        results['img_shape'] = results['img'].size
+        results['ori_shape'] = results['img'].size
+        return results

@@ -21,8 +21,7 @@ data_preprocessor = dict(
 )
 
 train_pipeline = [
-    dict(type='LoadImageFromFile'),
-    dict(type='ToPIL', to_rgb=True),
+    dict(type='PILLoadImageFromFile'),
     dict(type='torchvision/RandomResizedCrop', size=176, interpolation=2),
     dict(type='torchvision/RandomHorizontalFlip', p=0.5),
     dict(type='torchvision/TrivialAugmentWide', interpolation=2),
@@ -38,8 +37,7 @@ train_pipeline = [
 ]
 
 test_pipeline = [
-    dict(type='LoadImageFromFile'),
-    dict(type='ToPIL', to_rgb=True),
+    dict(type='PILLoadImageFromFile'),
     dict(type='torchvision/Resize', size=232, interpolation=2),
     dict(type='torchvision/CenterCrop', size=224),
     dict(type='torchvision/PILToTensor'),

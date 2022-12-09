@@ -95,18 +95,9 @@ test_evaluator = val_evaluator
 
 param_scheduler = [
     # warm up learning rate scheduler
-    dict(
-        type='LinearLR',
-        start_factor=0.001,
-        by_epoch=True,
-        begin=0,
-        end=6),
+    dict(type='LinearLR', start_factor=0.001, by_epoch=True, begin=0, end=6),
     # main learning rate scheduler
-    dict(
-        type='CosineAnnealingLR',
-        eta_min=1.0e-6,
-        by_epoch=True,
-        begin=6)
+    dict(type='CosineAnnealingLR', eta_min=1.0e-6, by_epoch=True, begin=6)
 ]
 
 # train, val, test setting

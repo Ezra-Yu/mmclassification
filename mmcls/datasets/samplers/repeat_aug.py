@@ -58,7 +58,8 @@ class RepeatAugSampler(Sampler):
         # The total number of repeated samples in all ranks.
         self.total_size = self.num_samples * world_size
         # The number of selected samples in the rank
-        self.num_selected_samples = math.floor(len(self.dataset) // 256 * 256 / world_size)
+        self.num_selected_samples = math.floor(
+            len(self.dataset) // 256 * 256 / world_size)
 
     def __iter__(self) -> Iterator[int]:
         """Iterate the indices."""

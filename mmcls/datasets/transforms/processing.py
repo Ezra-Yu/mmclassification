@@ -558,7 +558,8 @@ class RandomErasing(BaseTransform):
         for _ in range(10):
             aspect_ratio = np.exp(np.random.uniform(*log_aspect_range))
             area = img_h * img_w
-            erase_area = area * np.random.uniform(self.min_area_ratio, self.max_area_ratio)
+            erase_area = area * np.random.uniform(self.min_area_ratio,
+                                                  self.max_area_ratio)
 
             h = int(round(np.sqrt(erase_area * aspect_ratio)))
             w = int(round(np.sqrt(erase_area / aspect_ratio)))

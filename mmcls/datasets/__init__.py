@@ -10,8 +10,8 @@ from .mnist import MNIST, FashionMNIST
 from .multi_label import MultiLabelDataset
 from .samplers import *  # noqa: F401,F403
 from .transforms import *  # noqa: F401,F403
-from .voc import VOC
 from .vision import VisionImageNet
+from .voc import VOC
 
 __all__ = [
     'BaseDataset', 'ImageNet', 'CIFAR10', 'CIFAR100', 'MNIST', 'FashionMNIST',

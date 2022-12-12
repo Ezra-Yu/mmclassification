@@ -1,12 +1,17 @@
 import torch
-from torchvision.transforms import InterpolationMode
+
 
 train_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(type='ToPIL', to_rgb=True),
-    dict(type='torchvision/RandomResizedCrop', size=176, interpolation=InterpolationMode.BILINEAR),
+    dict(
+        type='torchvision/RandomResizedCrop',
+        size=176,
+        interpolation=2),
     dict(type='torchvision/RandomHorizontalFlip', p=0.5),
-    dict(type='torchvision/TrivialAugmentWide', interpolation=InterpolationMode.BILINEAR),
+    dict(
+        type='torchvision/TrivialAugmentWide',
+        interpolation=2),
     dict(type='torchvision/PILToTensor'),
     dict(type='torchvision/ConvertImageDtype', dtype=torch.float),
     dict(
@@ -18,21 +23,21 @@ train_pipeline = [
     dict(type='PackClsInputs'),
 ]
 
-dataset_cfg1=dict(
-        type='ImageNet',
-        ann_file='./data/imagenet/meta/train.txt',
-        data_prefix='./data/imagenet/train',
-        pipeline=train_pipeline)
+dataset_cfg1 = dict(
+    type='ImageNet',
+    ann_file='./data/imagenet/meta/train.txt',
+    data_prefix='./data/imagenet/train',
+    pipeline=train_pipeline)
 
-dataset_cfg2=dict(
-        type='VisionImageNet',
-        ann_file='./data/imagenet/meta/train.txt',
-        data_prefix='./data/imagenet/train')
-
+dataset_cfg2 = dict(
+    type='VisionImageNet',
+    ann_file='./data/imagenet/meta/train.txt',
+    data_prefix='./data/imagenet/train')
 
 from mmcls.datasets import build_dataset
 from mmcls.registry import TRANSFORMS
 from mmcls.utils import register_all_modules
+
 register_all_modules()
 
 dataset1 = build_dataset(dataset_cfg1)
@@ -43,8 +48,6 @@ for i in range(len(dataset1)):
     print(i)
     print(dataset1[i]['inputs'].shape, dataset2[i]['inputs'].shape)
     torch.allclose(dataset1[i]['inputs'], dataset2[i]['inputs'])
-    torch.allclose(
-        dataset1[i]['data_samples'].gt_label.label,
-        dataset2[i]['data_samples'].gt_label.label
-    )
+    torch.allclose(dataset1[i]['data_samples'].gt_label.label,
+                   dataset2[i]['data_samples'].gt_label.label)
     print()

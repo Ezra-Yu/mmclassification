@@ -33,7 +33,11 @@ model = dict(
 # dataset settings
 dataset_type = 'VisionImageNet'
 data_preprocessor = dict(
-    num_classes=1000, mean=None, std=None, to_rgb=False,)
+    num_classes=1000,
+    mean=None,
+    std=None,
+    to_rgb=False,
+)
 
 train_dataloader = dict(
     batch_size=12,

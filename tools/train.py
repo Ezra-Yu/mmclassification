@@ -147,7 +147,7 @@ def main():
 
     # load config
     cfg = Config.fromfile(args.config)
-    from mmcls.registry import TRANSFORMS
+
     # merge cli arguments to config
     cfg = merge_args(cfg, args)
 

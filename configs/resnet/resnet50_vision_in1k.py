@@ -1,4 +1,5 @@
-import torch
+_base_ = ['../_base_/default_runtime.py']
+
 
 # model settings
 model = dict(
@@ -31,17 +32,20 @@ model = dict(
         dict(type='CutMix', alpha=1.0)
     ]))
 
-data_preprocessor = dict( num_classes=1000, mean=None, std=None, to_rgb=False)
+data_preprocessor = dict(num_classes=1000, mean=None, std=None, to_rgb=False)
 
-import torch
-from torchvision.transforms import InterpolationMode
 
 train_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(type='ToPIL', to_rgb=True),
-    dict(type='torchvision/RandomResizedCrop', size=176, interpolation=InterpolationMode.BILINEAR),
+    dict(
+        type='torchvision/RandomResizedCrop',
+        size=176,
+        interpolation=2),
     dict(type='torchvision/RandomHorizontalFlip', p=0.5),
-    dict(type='torchvision/TrivialAugmentWide', interpolation=InterpolationMode.BILINEAR),
+    dict(
+        type='torchvision/TrivialAugmentWide',
+        interpolation=2),
     dict(type='torchvision/PILToTensor'),
     dict(type='torchvision/ConvertImageDtype', dtype=torch.float),
     dict(

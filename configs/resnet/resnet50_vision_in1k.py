@@ -1,3 +1,5 @@
+import math
+
 import torch
 
 _base_ = ['../_base_/default_runtime.py']
@@ -24,7 +26,7 @@ model = dict(
         in_channels=2048,
         loss=dict(
             type='LabelSmoothLoss', label_smooth_val=0.1, mode='original'),
-        init_cfg=dict(type='Normal', layer='Linear', std=0.01),
+        init_cfg=dict(type='Kaiming', layer='Linear', a=math.sqrt(5)),
         topk=(1, 5),
     ),
     init_cfg=None,

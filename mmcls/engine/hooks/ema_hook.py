@@ -17,16 +17,10 @@ class EMAHook(BaseEMAHook):
     training.
 
     Comparing with :class:`mmengine.hooks.EMAHook`, this hook accepts
-<<<<<<< HEAD
     ``evaluate_on_ema`` and ``evaluate_on_origin`` arguments. By default, the
     ``evaluate_on_ema`` is enabled, and if you want to do validation and
     testing on both original and EMA models, please set both arguments
     ``True``.
-=======
-    ``evaluate_on_ema`` and ``evaluate_on_nonema`` arguments. By default, the
-    ``evaluate_on_ema`` is enabled, and if you want to do validation and
-    testing on both EMA and non-EMA models, please set both arguments ``True``.
->>>>>>> [Enhance] Support evaluate on both EMA and non-EMA models.
 
     Note:
         - EMAHook takes priority over CheckpointHook.

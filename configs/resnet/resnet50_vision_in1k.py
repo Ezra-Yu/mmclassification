@@ -1,8 +1,4 @@
-import math
-
 import torch
-
-_base_ = ['../_base_/default_runtime.py']
 
 # model settings
 model = dict(
@@ -26,7 +22,7 @@ model = dict(
         in_channels=2048,
         loss=dict(
             type='LabelSmoothLoss', label_smooth_val=0.1, mode='original'),
-        init_cfg=dict(type='Kaiming', layer='Linear', a=math.sqrt(5)),
+        init_cfg=None,
         topk=(1, 5),
     ),
     init_cfg=None,
@@ -35,19 +31,17 @@ model = dict(
         dict(type='CutMix', alpha=1.0)
     ]))
 
-data_preprocessor = dict(
-    num_classes=1000,
-    mean=[0., 0., 0.],
-    std=[1., 1., 1.],
-    to_rgb=False,
-)
+data_preprocessor = dict( num_classes=1000, mean=None, std=None, to_rgb=False)
+
+import torch
+from torchvision.transforms import InterpolationMode
 
 train_pipeline = [
     dict(type='LoadImageFromFile'),
     dict(type='ToPIL', to_rgb=True),
-    dict(type='torchvision/RandomResizedCrop', size=176, interpolation=2),
+    dict(type='torchvision/RandomResizedCrop', size=176, interpolation=InterpolationMode.BILINEAR),
     dict(type='torchvision/RandomHorizontalFlip', p=0.5),
-    dict(type='torchvision/TrivialAugmentWide', interpolation=2),
+    dict(type='torchvision/TrivialAugmentWide', interpolation=InterpolationMode.BILINEAR),
     dict(type='torchvision/PILToTensor'),
     dict(type='torchvision/ConvertImageDtype', dtype=torch.float),
     dict(

@@ -193,10 +193,15 @@ class EMAHook(BaseEMAHook):
             self.load_ema_from_ckpt = True
 
         # Support load checkpoint without ema state dict.
-        else:
+        elif 'state_dict' in checkpoint:
             load_state_dict(
                 self.ema_model.module,
                 copy.deepcopy(checkpoint['state_dict']),
+                strict=self.strict_load)
+        else:
+            load_state_dict(
+                self.ema_model.module,
+                copy.deepcopy(checkpoint),
                 strict=self.strict_load)
 
     @property

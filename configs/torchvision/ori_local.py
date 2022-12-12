@@ -1,27 +1,39 @@
-_base_ = ['../_base_/models/resnet50.py', '../_base_/default_runtime.py']
+_base_ = ['../_base_/default_runtime.py']
 
 # model settings
 model = dict(
+    type='ImageClassifier',
+    backbone=dict(
+        type='ResNet',
+        depth=50,
+        num_stages=4,
+        out_indices=(3, ),
+        style='pytorch',
+        zero_init_residual=False,
+        init_cfg=[
+            dict(type='Kaiming', layer=['Conv2d']),
+            dict(type='Constant', val=1, layer=['_BatchNorm', 'GroupNorm'])
+        ],
+    ),
+    neck=dict(type='GlobalAveragePooling'),
     head=dict(
+        type='LinearClsHead',
+        num_classes=1000,
+        in_channels=2048,
         loss=dict(
-            type='LabelSmoothLoss',
-            label_smooth_val=0.1,
-            mode='original',
-        )),
+            type='LabelSmoothLoss', label_smooth_val=0.1, mode='original'),
+        init_cfg=None,
+        topk=(1, 5),
+    ),
+    init_cfg=None,
     train_cfg=dict(augments=[
-        dict(type='Mixup', alpha=0.2),
+        dict(type='Mixup', alpha=0.8),
         dict(type='CutMix', alpha=1.0)
-    ]),
-)
-
+    ]))
 # dataset settings
 dataset_type = 'VisionImageNet'
 data_preprocessor = dict(
-    num_classes=1000,
-    mean=[0., 0., 0.],
-    std=[1., 1., 1.],
-    to_rgb=False,
-)
+    num_classes=1000, mean=None, std=None, to_rgb=False,)
 
 train_dataloader = dict(
     batch_size=12,
@@ -70,7 +82,7 @@ test_cfg = dict()
 
 custom_hooks = [
     dict(
-        type='LazyEMAHook',
+        type='EMAHook',
         momentum=0.0010923,
         begin_epoch=5,
         interval=32,

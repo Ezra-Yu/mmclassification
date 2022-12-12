@@ -148,13 +148,11 @@ def main():
     # load config
     cfg = Config.fromfile(args.config)
     from mmcls.registry import TRANSFORMS
-    print(TRANSFORMS)
     # merge cli arguments to config
     cfg = merge_args(cfg, args)
 
     # build the runner from config
     runner = Runner.from_cfg(cfg)
-    print(runner.train_dataloader.dataset.pipeline)
     # start training
     runner.train()
 

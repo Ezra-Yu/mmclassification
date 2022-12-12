@@ -102,7 +102,8 @@ custom_hooks = [
         begin_epoch=5,
         interval=32,
         update_buffers=True,
-        evaluate_on_nonema=True,
+        evaluate_on_ema=True,
+        evaluate_on_origin=True,
         priority='ABOVE_NORMAL')
 ]
 

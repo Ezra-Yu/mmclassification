@@ -1,17 +1,37 @@
 import torch
 
-_base_ = ['../_base_/models/resnet50.py', '../_base_/default_runtime.py']
+_base_ = ['../_base_/default_runtime.py']
 
 # model settings
 model = dict(
+    type='ImageClassifier',
+    backbone=dict(
+        type='ResNet',
+        depth=50,
+        num_stages=4,
+        out_indices=(3, ),
+        style='pytorch',
+        zero_init_residual=False,
+        init_cfg=[
+            dict(type='Kaiming', layer=['Conv2d']),
+            dict(type='Constant', val=1, layer=['_BatchNorm', 'GroupNorm'])
+        ],
+    ),
+    neck=dict(type='GlobalAveragePooling'),
     head=dict(
+        type='LinearClsHead',
+        num_classes=1000,
+        in_channels=2048,
         loss=dict(
-            type='LabelSmoothLoss', label_smooth_val=0.1, mode='original')),
+            type='LabelSmoothLoss', label_smooth_val=0.1, mode='original'),
+        init_cfg=dict(type='Normal', layer='Linear', std=0.01),
+        topk=(1, 5),
+    ),
+    init_cfg=None,
     train_cfg=dict(augments=[
-        dict(type='Mixup', alpha=0.2),
+        dict(type='Mixup', alpha=0.8),
         dict(type='CutMix', alpha=1.0)
-    ]),
-)
+    ]))
 
 data_preprocessor = dict(
     num_classes=1000,
@@ -104,7 +124,8 @@ custom_hooks = [
         begin_epoch=5,
         interval=32,
         update_buffers=True,
-        evaluate_on_nonema=True,
+        evaluate_on_ema=True,
+        evaluate_on_origin=True,
         priority='ABOVE_NORMAL')
 ]
 

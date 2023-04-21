@@ -15,6 +15,8 @@ from mmpretrain.structures import DataSample
 from .utils import create_figure, get_adaptive_scale
 
 
+
+
 @VISUALIZERS.register_module()
 class UniversalVisualizer(Visualizer):
     """Universal Visualizer for multiple tasks.

@@ -136,8 +136,7 @@ class UniversalVisualizer(Visualizer):
                 class_labels = [f' ({classes[i]})' for i in idx]
 
             labels = [
-                str(idx[i]) + score_labels[i] + class_labels[i]
-                for i in range(len(idx))
+                str(class_labels[i]) for i in range(len(idx))
             ]
             prefix = 'Prediction: '
             texts.append(prefix + ('\n' + ' ' * len(prefix)).join(labels))

@@ -1,6 +1,7 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import os
 
+os.system('pyenv shell 3.9.16')
 os.system('python -m mim install -e .')
 
 import gradio as gr

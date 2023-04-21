@@ -38,7 +38,7 @@ class ImageClassificationTab:
             'vit-huge-p14_mae-1600e-pre_32xb8-coslr-50e_in1k-448px',
             'vit-huge-p14_mae-1600e-pre_8xb128-coslr-50e_in1k',
             'vit-large-p16_mae-1600e-pre_8xb128-coslr-50e_in1k']
-        self.long_list = list_models("vit*mae*_in1k")
+        # self.long_list = list_models("vit*mae*_in1k")
         self.tab = self.create_ui()
 
     def create_ui(self):
@@ -51,16 +51,6 @@ class ImageClassificationTab:
                     choices=self.short_list,
                     value='vit-base-p16_32xb128-mae_in1k',
                 )
-                expand = gr.Checkbox(label='Browse all mae models')
-
-                def browse_all_model(value):
-                    models = self.long_list if value else self.short_list
-                    return gr.update(choices=models)
-
-                expand.select(
-                    fn=browse_all_model, inputs=expand, outputs=select_model)
-
-            with gr.Column():
                 in_image = gr.Image(
                     value=None,
                     label='Input',
@@ -74,6 +64,8 @@ class ImageClassificationTab:
                     inputs = in_image,
                     outputs=in_image
                 )
+
+            with gr.Column():
                 out_cls = gr.Label(
                     label='Result',
                     num_top_classes=5,

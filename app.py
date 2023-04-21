@@ -1,7 +1,7 @@
 # Copyright (c) OpenMMLab. All rights reserved.
 import os
 
-os.system('pip install -U openmim && mim install -e .')
+os.system('python -m mim install -e .')
 
 import gradio as gr
 from mmpretrain.visualization import UniversalVisualizer

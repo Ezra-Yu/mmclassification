@@ -1,3 +1,4 @@
 -r requirements/optional.txt
 -r requirements/runtime.txt
 gradio
+openmim

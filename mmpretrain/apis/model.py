@@ -8,8 +8,10 @@ from pathlib import Path
 from typing import List, Union
 
 from mmengine.config import Config
+from mmengine import DefaultScope
 from modelindex.load_model_index import load
 from modelindex.models.Model import Model
+from mmpretrain.registry import MODELS
 
 
 class ModelHub:
@@ -93,6 +95,7 @@ class ModelHub:
         return model_name in cls._models_dict
 
 
+@MODELS.register_module('get_model')
 def get_model(model: Union[str, Config],
               pretrained: Union[str, bool] = False,
               device=None,
@@ -164,8 +167,9 @@ def get_model(model: Union[str, Config],
     config.model.setdefault('data_preprocessor',
                             config.get('data_preprocessor', None))
 
-    from mmpretrain.registry import MODELS
-    model = MODELS.build(config.model)
+    with DefaultScope.overwrite_default_scope('mmpretrain'):
+        from mmpretrain.registry import MODELS
+        model = MODELS.build(config.model)
 
     dataset_meta = {}
     if pretrained:

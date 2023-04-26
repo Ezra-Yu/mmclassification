@@ -471,14 +471,9 @@ class ViTDetBackbone(BaseBackbone):
         self.use_abs_pos = use_abs_pos
         self.interpolate_mode = interpolate_mode
         if use_abs_pos:
-            if self.with_cls_token:
-                num_pachs = self.patch_resolution[0] * self.patch_resolution[1] + 1
-                self.pos_embed = nn.Parameter(
-                    torch.zeros(1, num_pachs, self.embed_dims))
-            else:
-                # Set position embedding
-                self.pos_embed = nn.Parameter(
-                    torch.zeros(1, *self.patch_resolution, self.embed_dims))
+            # Set position embedding
+            self.pos_embed = nn.Parameter(
+                torch.zeros(1, *self.patch_resolution, self.embed_dims))
             self.drop_after_pos = nn.Dropout(p=drop_rate)
             self._register_load_state_dict_pre_hook(self._prepare_pos_embed)
 
@@ -625,7 +620,8 @@ class ViTDetBackbone(BaseBackbone):
         name = prefix + 'pos_embed'
         if name not in state_dict.keys():
             return
-
+        if self.with_cls_token:
+            state_dict[name] = state_dict[name][:, 1:, :].view(1, 14, 14, self.embed_dims)
         ckpt_pos_embed_shape = state_dict[name].shape
         if self.pos_embed.shape != ckpt_pos_embed_shape:
             from mmengine.logging import MMLogger

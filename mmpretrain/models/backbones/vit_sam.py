@@ -313,8 +313,8 @@ class TransformerEncoderLayer(BaseModule):
         return x
 
 
-@MODELS.register_module()
-class ViTSAM(BaseBackbone):
+@MODELS.register_module('ViTSAM')
+class ViTDetBackbone(BaseBackbone):
     """Vision Transformer as image encoder used in SAM.
 
     A PyTorch implement of backbone: `Segment Anything
@@ -334,9 +334,8 @@ class ViTSAM(BaseBackbone):
               attention.
 
             Defaults to 'base'.
-        img_size (int | tuple): The expected input image shape. Because we
-            support dynamic input shape, just set the argument to the most
-            common input image shape. Defaults to 224.
+        img_size (int | tuple): The pretrained weight except iamge
+            size. Defaults to 224.
         patch_size (int | tuple): The patch size in patch embedding.
             Defaults to 16.
         in_channels (int): The num of input channels. Defaults to 3.
@@ -364,6 +363,8 @@ class ViTSAM(BaseBackbone):
         window_size (int): Window size for window attention. Defaults to 14.
         norm_cfg (dict): Config dict for normalization layer.
             Defaults to ``dict(type='LN')``.
+        with_cls_token (bool): Whether concatenating class token into image
+            tokens as transformer input. Defaults to True.
         frozen_stages (int): Stages to be frozen (stop grad and set eval mode).
             -1 means not freezing any parameters. Defaults to -1.
         interpolate_mode (str): Select the interpolate mode for position
@@ -417,6 +418,7 @@ class ViTSAM(BaseBackbone):
                  use_rel_pos: bool = True,
                  window_size: int = 14,
                  norm_cfg: dict = dict(type='LN', eps=1e-6),
+                 with_cls_token=False,
                  frozen_stages: int = -1,
                  interpolate_mode: str = 'bicubic',
                  patch_cfg: dict = dict(),
@@ -441,6 +443,11 @@ class ViTSAM(BaseBackbone):
         self.num_layers = self.arch_settings['num_layers']
         self.global_attn_indexes = self.arch_settings['global_attn_indexes']
         self.img_size = to_2tuple(img_size)
+        self.with_cls_token = with_cls_token
+
+        if with_cls_token and use_rel_pos:
+            raise ValueError(
+                "`with_cls_token` and `use_rel_pos` cannot be `True` at same time.")
 
         # Set patch embedding
         _patch_cfg = dict(
@@ -464,9 +471,14 @@ class ViTSAM(BaseBackbone):
         self.use_abs_pos = use_abs_pos
         self.interpolate_mode = interpolate_mode
         if use_abs_pos:
-            # Set position embedding
-            self.pos_embed = nn.Parameter(
-                torch.zeros(1, *self.patch_resolution, self.embed_dims))
+            if self.with_cls_token:
+                num_pachs = self.patch_resolution[0] * self.patch_resolution[1] + 1
+                self.pos_embed = nn.Parameter(
+                    torch.zeros(1, num_pachs, self.embed_dims))
+            else:
+                # Set position embedding
+                self.pos_embed = nn.Parameter(
+                    torch.zeros(1, *self.patch_resolution, self.embed_dims))
             self.drop_after_pos = nn.Dropout(p=drop_rate)
             self._register_load_state_dict_pre_hook(self._prepare_pos_embed)
 
